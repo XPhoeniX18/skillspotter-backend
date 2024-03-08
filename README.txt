@@ -1,0 +1,1 @@
+Use the command npm i --save to get the necessary dependacies
