@@ -36,9 +36,22 @@ app.get('/api/items', async (req, res) => {
 // Create a new item
 app.post('/api/items', async (req, res) => {
   try {
-    const newItem = new Item(req.body);
+    // Extract item details from the request body
+    const { name, description } = req.body;
+    // Check if an item with the same name already exists
+    const existingItem = await Item.findOne({ name });
+
+    // If an item with the same name already exists, return an error response
+    if (existingItem) {
+      return res.status(400).json({ error: 'Item with the same name already exists' });
+    }
+
+    // If no item with the same name exists, create a new item and save it to the database
+    const newItem = new Item({ name, description });
     await newItem.save();
-    res.json(newItem);
+
+    // Return the newly created item in the response
+    res.status(201).json(newItem);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
